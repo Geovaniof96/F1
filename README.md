@@ -34,6 +34,7 @@ make check               # tudo acima + mypy
 
 ## Documentação
 
+Publicada em <https://geovaniof96.github.io/F1/> a cada push na `main` (via CI).
 Feita com mkdocs-material (fonte em [`docs/`](docs/index.md)):
 
 ```bash

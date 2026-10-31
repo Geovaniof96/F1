@@ -1,5 +1,6 @@
 site_name: f1
 site_description: Dashboard interativo de dados históricos da Fórmula 1 a partir da API OpenF1.
+site_url: https://geovaniof96.github.io/F1/
 repo_url: https://github.com/Geovaniof96/F1
 repo_name: Geovaniof96/F1
 

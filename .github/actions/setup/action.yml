@@ -1,0 +1,35 @@
+name: Setup Python + Poetry
+description: Instala Python (versão do .python-version), Poetry e as dependências do projeto com cache da .venv.
+
+inputs:
+  poetry-version:
+    description: Versão do Poetry
+    default: "2.5.1"
+  install-args:
+    description: "Argumentos extras para `poetry install` (ex.: --with docs)"
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Instala Poetry
+      shell: bash
+      run: pipx install "poetry==${{ inputs.poetry-version }}"
+
+    - name: Configura Python
+      id: python
+      uses: actions/setup-python@v6
+      with:
+        python-version-file: .python-version
+
+    - name: Cache da .venv
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-py${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock') }}-${{ inputs.install-args }}
+
+    - name: Instala dependências
+      shell: bash
+      run: |
+        poetry env use "${{ steps.python.outputs.python-path }}"
+        poetry install --no-interaction ${{ inputs.install-args }}

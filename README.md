@@ -1,5 +1,7 @@
 # F1
 
+[![CI](https://github.com/Geovaniof96/F1/actions/workflows/ci.yml/badge.svg)](https://github.com/Geovaniof96/F1/actions/workflows/ci.yml)
+
 Dashboard interativo (Streamlit + Plotly) de dados históricos da Fórmula 1, alimentado pela
 API pública [OpenF1](https://openf1.org). Mostra resultado, ritmo por volta, estratégia de
 pneus e clima de cada sessão, a partir de um cache local em Parquet.

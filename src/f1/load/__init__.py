@@ -1,0 +1,1 @@
+"""Gravação dos dados extraídos."""

@@ -1,0 +1,103 @@
+[project]
+name = "f1"
+version = "0.1.0"
+description = "Dashboard interativo de dados históricos da Fórmula 1 a partir da API pública OpenF1."
+authors = [
+    {name = "Geovanio Claudino Cavalcante Filho", email = "geo.cavalcante1@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<3.13"  # alinhado ao .python-version (3.12.10)
+dependencies = [
+    "requests (>=2.34.2,<3.0.0)",
+    "pydantic-settings (>=2.16.2,<3.0.0)",
+    "pyarrow (>=26.0.0,<27.0.0)",
+    "pandas (>=3.1.0,<4.0.0)",
+    "streamlit (>=1.66.1,<2.0.0)",
+    "plotly (>=7.1.0,<8.0.0)"
+]
+
+[project.scripts]
+f1-extract = "f1.cli:main"
+f1-dashboard = "f1.dashboard.__main__:main"
+
+[tool.poetry]
+packages = [{include = "f1", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+docs = [
+    "mkdocs-material (>=9.8.0,<10.0.0)",
+    "mkdocstrings[python] (>=1.0.8,<2.0.0)"
+]
+dev = [
+    "ruff (>=0.17.3,<0.18.0)",
+    "pytest (>=9.2.0,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "pytest-mock (>=3.17.0,<4.0.0)",
+    "mypy (>=2.4.1,<3.0.0)",
+    "pre-commit (>=4.7.0,<5.0.0)",
+    "taskipy (>=1.14.1,<2.0.0)",
+    "types-requests (>=2.33.0.20261030,<3.0.0.0)",
+    "pyarrow-stubs (>=20.0.0.20260819,<21.0.0.0)",
+    "pandas-stubs (>=3.1.0.261029,<4.0.0.0)"
+]
+
+# ---------- Ruff ----------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "N", "C4", "PL", "RUF", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    # assert é o mecanismo do pytest
+    "PLR2004", # valores literais são esperados em asserts
+    "S105",    # credenciais falsas em fixtures
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["f1"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# ---------- Pytest / Coverage ----------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src/f1 --cov-report=term-missing --cov-fail-under=50"
+
+[tool.coverage.run]
+source = ["src/f1"]
+branch = true
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
+
+# ---------- Mypy ----------
+[tool.mypy]
+python_version = "3.12"
+files = ["src"]
+strict = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["plotly", "plotly.*"]
+ignore_missing_imports = true  # plotly não publica type hints (sem py.typed nem stubs)
+
+# ---------- Taskipy (poetry run task <nome>) ----------
+[tool.taskipy.tasks]
+lint = { cmd = "ruff check . && ruff format --check .", help = "Ruff lint + checagem de formatação" }
+format = { cmd = "ruff check . --fix && ruff format .", help = "Corrige lint e formata com Ruff" }
+test = { cmd = "pytest", help = "Testes com cobertura (mínimo 50%)" }
+docs = { cmd = "mkdocs build --strict", help = "Build da documentação mkdocs-material em site/ (strict)" }
+docs-serve = { cmd = "mkdocs serve", help = "Documentação com recarga automática em http://localhost:8000" }
+extract = { cmd = "f1-extract", help = "Extrai dados da OpenF1 para data/ (ex.: task extract --year 2024)" }
+dashboard = { cmd = "f1-dashboard", help = "Abre o dashboard Streamlit" }
